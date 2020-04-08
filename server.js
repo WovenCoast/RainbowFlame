@@ -47,12 +47,27 @@ const catchAsync = fn => (
     }
   }
 );
+const requireAuth = (req, res, next) => {
+  if (!req.session.user) {
+    req.session.redirectURL = req.baseURL;
+    res.redirect('/api/discord/login');
+  } else {
+    next();
+  }
+}
 
 app.get("/", (req, res) => {
   res.render("index.ejs");
 });
+app.get("/test", requireAuth, (req, res) => {
+  res.render("index.ejs");
+})
 app.get('/api/discord/login', (req, res) => {
-  res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${process.env.CLIENT_ID}&scope=${encodeURIComponent('identify email guilds')}&response_type=code&redirect_uri=${encodeURIComponent('https://flamecord.glitch.me/api/discord/callback')}`);
+  if (req.session.user) {
+    res.redirect(req.session.redirectURL || "https://flamecord.glitch.me/");
+  } else {
+    res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${process.env.CLIENT_ID}&scope=${encodeURIComponent('identify email guilds')}&response_type=code&redirect_uri=${encodeURIComponent('https://flamecord.glitch.me/api/discord/callback')}`);
+  }
 });
 app.get('/api/discord/callback', catchAsync(async (req, res) => {
   if (!req.query.code) throw new Error('NoCodeProvided');
@@ -66,7 +81,8 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
       },
     });
   const json = await response.json();
-  console.log(json);
+  req.session.accessToken = json.access_token;
+  req.session.refreshToken = json.refresh_token;
   const userData = await fetch('https://discordapp.com/api/users/@me', {
     method: 'GET',
     headers: {
@@ -85,7 +101,8 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
     .then(res => res.json())
     .catch(console.error);
   req.session.user.guilds = guildData;
-  res.redirect(`/?token=${json.access_token}`);
+  res.redirect(req.session.redirectURL || 'https://flamecord.glitch.me/');
+  req.session.redirectURL = undefined;
 }));
 
 const listener = app.listen(process.env.PORT, () => {
