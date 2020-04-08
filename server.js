@@ -60,9 +60,8 @@ client.on('message', (message) => {
 client.login(process.env.TOKEN);
 const express = require("express");
 const fetch = require('node-fetch');
-const btoa = require('btoa'),
-      session = require("express-session"),
-      MemcachedStore = require("connect-memcached")(session);
+const btoa = require('btoa');
+const session = require("express-session");
 const app = express();
 
 app.set("view engine", "ejs");
@@ -74,11 +73,7 @@ app.use(
     proxy: "true",
     cookie: { secure: true },
     resave: false,
-    saveUninitialized: false,
-    store: new MemcachedStore({
-      hosts: ["127.0.0.1:11211"],
-      secret: "123, easy as ABC. ABC, easy as 123" // Optionally use transparent encryption for memcache session data
-    })
+    saveUninitialized: false
   })
 );
 app.use((err, req, res, next) => {

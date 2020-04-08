@@ -1,6 +1,5 @@
 dependencies:
   btoa: 1.2.1
-  connect-memcached: 1.0.0
   discord.js: 12.1.1
   ejs: 3.0.2
   express: 4.17.1
@@ -60,10 +59,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-SB4/MIGlsiVkMcHmT+pSmIPoNDoHg+7cMzmt3Uxt628MTz2487DKSqK/fuhFBrkuqrYv5UCEnACpF4dTFNKc/g==
-  /buffer-from/1.1.0:
-    dev: false
-    resolution:
-      integrity: sha512-c5mRlguI/Pe2dSZmpER62rSCu0ryKmWddzRYsuXc50U2/g8jMOulc31VZMa4mYx31U5xsmSOpDCgH88Vl9cDGQ==
   /bytes/3.1.0:
     dev: false
     engines:
@@ -78,19 +73,6 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
-  /connect-memcached/1.0.0:
-    dependencies:
-      buffer-from: 1.1.0
-      memcached: 2.2.2
-    dev: false
-    engines:
-      node: '>= 0.10.0'
-    resolution:
-      integrity: sha1-e+LfsI6g50bYe6a1HQHBYDslXtM=
-  /connection-parse/0.0.7:
-    dev: false
-    resolution:
-      integrity: sha1-GOcxiqsGppkmc3KxDFIm0locmmk=
   /content-disposition/0.5.3:
     dependencies:
       safe-buffer: 5.1.2
@@ -286,13 +268,6 @@ packages:
       node: '>= 0.6'
     resolution:
       integrity: sha1-PYyt2Q2XZWn6g1qx+OSyOhBWBac=
-  /hashring/3.2.0:
-    dependencies:
-      connection-parse: 0.0.7
-      simple-lru-cache: 0.0.2
-    dev: false
-    resolution:
-      integrity: sha1-/aTv3oqiLNuX+x0qZeiEAeHBRM4=
   /http-errors/1.7.2:
     dependencies:
       depd: 1.1.2
@@ -339,25 +314,12 @@ packages:
       node: '>= 0.10'
     resolution:
       integrity: sha512-M4Sjn6N/+O6/IXSJseKqHoFc+5FdGJ22sXqnjTpdZweHK64MzEPAyQZyEU3R/KRv2GLoa7nNtg/C2Ev6m7z+eA==
-  /jackpot/0.0.6:
-    dependencies:
-      retry: 0.6.0
-    dev: false
-    resolution:
-      integrity: sha1-PP8GQoXL9m9OqyWTyQvOgWqCGEk=
   /media-typer/0.3.0:
     dev: false
     engines:
       node: '>= 0.6'
     resolution:
       integrity: sha1-hxDXrwqmJvj/+hzgAWhUUmMlV0g=
-  /memcached/2.2.2:
-    dependencies:
-      hashring: 3.2.0
-      jackpot: 0.0.6
-    dev: false
-    resolution:
-      integrity: sha1-aPhsz9hLz5PMJe1G1tf8DHUhydU=
   /merge-descriptors/1.0.1:
     dev: false
     resolution:
@@ -494,10 +456,6 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha512-4Oz8DUIwdvoa5qMJelxipzi/iJIi40O5cGV1wNYp5hvZP8ZN0T+jiNkL0QepXs+EsQ9XJ8ipEDoiH70ySUJP3Q==
-  /retry/0.6.0:
-    dev: false
-    resolution:
-      integrity: sha1-HAEHEyeab9Ho3vKK8MP/GHHKpTc=
   /safe-buffer/5.1.2:
     dev: false
     resolution:
@@ -549,10 +507,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-JvdAWfbXeIGaZ9cILp38HntZSFSo3mWg6xGcJJsd+d4aRMOqauag1C63dJfDw7OaMYwEbHMOxEZ1lqVRYP2OAw==
-  /simple-lru-cache/0.0.2:
-    dev: false
-    resolution:
-      integrity: sha1-1ZzDoZPBpdAyD4Tucy9uRxPlEd0=
   /statuses/1.5.0:
     dev: false
     engines:
@@ -618,7 +572,6 @@ shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
   btoa: ^1.2.1
-  connect-memcached: ^1.0.0
   discord.js: ^12.1.1
   ejs: ^3.0.2
   express: ^4.17.1
