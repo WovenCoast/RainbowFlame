@@ -20,10 +20,13 @@ client.commandsSuccess = 0;
 client.commaandsFail = 0;
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
+client.categories = {};
 fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
+  client.categories[Util.titleCase(dir)] = [];
   fs.readdirSync(path.join(__dirname, "./commands", dir)).forEach(commandPath => {
     const command = require(path.join(__dirname, "./commands", dir, commandPath));
     command.category = Util.titleCase(dir);
+    client.categories[command.category].push(command.name);
     client.commands.set(command.name, command);
     command.aliases.forEach(alias => {
       client.aliases.set(alias, command.name);
@@ -40,8 +43,12 @@ client.on('message', (message) => {
   if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing **${prefix} help** to see what my commands are!`);
   const command = client.commands.has(invoke) ? client.commands.get(invoke) : client.commands.get(client.aliases.get(invoke));
   
+  const args = message.content.slice(invoke.length + prefix.length).trim().split('"').map((e, i) => i % 2 === 0 ? e.trim().split(" ") : [e.trim()]).flat(1);
+  message.prefix = prefix;
+  message.invoke = invoke;
+  message.args = args;
   client.commandsExec++;
-  command.exec(client, message).then(() => {
+  command.exec(client, message, args).then(() => {
     client.commandsSuccess++;
   }).catch((err) => {
     client.commandsFail++;
