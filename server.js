@@ -2,6 +2,8 @@ function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 const Discord = require('discord.js');
+const fs = require('fs');
+const path = require('path');
 const client = new Discord.Client();
 client.prefix = ["!", "."];
 client.on('ready', () => {
@@ -9,13 +11,18 @@ client.on('ready', () => {
   client.prefix.unshift(client.user.toString());
 });
 client.commands = new Discord.Collection();
-client.on('message', (message) => {
-  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing \`${pickRandom(client.prefix)}help\` to see my commands!`);
+client.aliases = new Discord.Collection();
+fs.readDirSync(path.join(__dirname, "./commands")).forEach(dir => {
   
-  if (!client.prefix.some(p => message.content.split(" ")[0].startsWith(p))) return;
-  const prefix = client.prefix.find(p => message.content.split(" ")[0].startsWith(p));
-  const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0];
-  console.log(prefix, invoke);
+})
+client.on('message', (message) => {
+  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing **${pickRandom(client.prefix)} help** to see my commands!`);
+  
+  if (!client.prefix.some(p => message.content.split(" ")[0].startsWith(p.toLowerCase()))) return;
+  const prefix = client.prefix.find(p => message.content.split(" ")[0].startsWith(p.toLowerCase())).toLowerCase();
+  const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0].toLowerCase();
+  
+  if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing **${prefix} help** to see what my commands are!`);
 });
 client.login(process.env.TOKEN);
 
