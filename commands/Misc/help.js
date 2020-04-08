@@ -3,20 +3,31 @@ const Discord = require('discord.js');
 module.exports = {
   name: "help",
   aliases: ["h"],
+  usage: "{prefix}help [command|category]",
   async exec(client, message, args) {
     if (!args[0]) {
       const embed = new Discord.MessageEmbed().setColor(client.colors.info).setAuthor(`${message.author.tag} | Help`, message.author.displayAvatarURL());
       Object.keys(client.categories).forEach(category => {
         const commands = client.commands.filter(command => command.category === category);
-        embed.addField(`**${category}**: ${commands.size}`, commands.map(command => `\`${command.name}\``).join(", "));
+        embed.addField(`**${category}**: ${commands.size} Commands`, commands.map(command => `\`${command.name}\``).join(", "));
       })
       return message.channel.send(embed);
     } else {
       const embed = new Discord.MessageEmbed().setColor(client.colors.info).setAuthor(`${message.author.tag} | Help`, message.author.displayAvatarURL());
       if (Object.keys(client.categories).some(category => category.toLowerCase() === args[0].toLowerCase())) {
         const category = Object.keys(client.categories).find(category => category.toLowerCase() === args[0].toLowerCase());
-        embed.setTitle(`${category}: ${client.categories[category].length} Commands`);
+        embed.setTitle(`**${category}**: ${client.categories[category].length} Commands`);
         embed.setDescription(client.categories[category].map(commandName => `\`${commandName}\``).join(", "));
+      } else if (client.commands.has(args[0].toLowerCase()) || client.aliases.has(args[0].toLowerCase())) {
+        const command = client.commands.has(args[0].toLowerCase()) ? client.commands.get(args[0].toLowerCase()) : client.commands.get(client.aliases.get(args[0].toLowerCase()));
+        embed.setTitle(command.name);
+        if (command.description) {
+          embed.addField("**Description**:", command.description);
+        }
+        embed.addField("**Aliases**:", command.aliases.map(alias => `\`${alias}\``).join(", "));
+        if (command.usage) {
+          embed.addField("**Usage**:", command.usage.replace("{prefix}", message.prefix));
+        }
       }
       return message.channel.send(embed);
     }
