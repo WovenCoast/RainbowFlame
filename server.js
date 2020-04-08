@@ -16,6 +16,7 @@ app.use(
     secret: "CatOnKeyboard",
     key: "test",
     proxy: "true",
+    cookie: { secure: true },
     resave: false,
     saveUninitialized: false,
     store: new MemcachedStore({
@@ -38,7 +39,6 @@ app.use((err, req, res, next) => {
       });
   }
 });
-
 const catchAsync = fn => (
   (req, res, next) => {
     const routePromise = fn(req, res, next);
@@ -48,19 +48,17 @@ const catchAsync = fn => (
   }
 );
 
-const redirect = 'https://flamecord.glitch.me/api/discord/callback';
-
 app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 app.get('/api/discord/login', (req, res) => {
-  res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${process.env.CLIENT_ID}&scope=identify&response_type=code&redirect_uri=${encodeURIComponent(redirect)}`);
+  res.redirect(`https://discordapp.com/api/oauth2/authorize?client_id=${process.env.CLIENT_ID}&scope=${encodeURIComponent('identify email guilds')}&response_type=code&redirect_uri=${encodeURIComponent('https://flamecord.glitch.me/api/discord/callback')}`);
 });
 app.get('/api/discord/callback', catchAsync(async (req, res) => {
   if (!req.query.code) throw new Error('NoCodeProvided');
   const code = req.query.code;
   const creds = btoa(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`);
-  const response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${redirect}`,
+  const response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${'https://flamecord.glitch.me/api/discord/callback'}`,
     {
       method: 'POST',
       headers: {
@@ -69,6 +67,18 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
     });
   const json = await response.json();
   console.log(json);
+  const userData = await fetch('https://discordapp.com/api/users/@me', {
+    method: 'GET',
+    headers: {
+      Authorization: btoa(`${json.token_type} ${json.access_token}`)
+    }
+  })
+    .then(res => res.json())
+    .then(response => {
+      const { username, discriminator } = response;
+      console.log(response);
+    })
+    .catch(console.error);
   res.redirect(`/?token=${json.access_token}`);
 }));
 
