@@ -1,5 +1,5 @@
 {
-  "name": "flamebot",
+  "name": "flamecord",
   "version": "0.0.1",
   "description": "A simple Node app built on Express, instantly up and running.",
   "main": "server.js",
@@ -8,13 +8,14 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "ejs": "^3.0.2"
+    "ejs": "^3.0.2",
+    "discord.js": "^12.1.1"
   },
   "engines": {
     "node": "12.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/flamebot"
+    "url": "https://glitch.com/edit/#!/flamecord"
   },
   "license": "MIT",
   "keywords": [
