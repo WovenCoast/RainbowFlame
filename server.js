@@ -70,15 +70,12 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
   const userData = await fetch('https://discordapp.com/api/users/@me', {
     method: 'GET',
     headers: {
-      Authorization: btoa(`${json.token_type} ${json.access_token}`)
+      Authorization: `${json.token_type} ${json.access_token}`
     }
   })
     .then(res => res.json())
-    .then(response => {
-      const { username, discriminator } = response;
-      console.log(response);
-    })
     .catch(console.error);
+  req.session.user = userData;
   res.redirect(`/?token=${json.access_token}`);
 }));
 
