@@ -26,7 +26,7 @@ module.exports = {
         }
         embed.addField("**Aliases**:", command.aliases.map(alias => `\`${alias}\``).join(", "));
         if (command.usage) {
-          embed.addField("**Usage**:", command.usage.replace("{prefix}", message.prefix));
+          embed.addField("**Usage**:", command.usage.replace("{prefix}", client.util.getRandom(client.prefix)));
         }
       }
       return message.channel.send(embed);

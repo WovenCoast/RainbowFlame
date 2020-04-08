@@ -1,8 +1,8 @@
 class Util {
-  static pickRandom(arr) {
+  getRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
-  static titleCase(string) {
+  titleCase(string) {
     return string[0].toUpperCase() + string.slice(1).toLowerCase();
   }
 }
@@ -25,11 +25,12 @@ client.commaandsFail = 0;
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 client.categories = {};
+client.util = new Util();
 fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
-  client.categories[Util.titleCase(dir)] = [];
+  client.categories[client.util.titleCase(dir)] = [];
   fs.readdirSync(path.join(__dirname, "./commands", dir)).forEach(commandPath => {
     const command = require(path.join(__dirname, "./commands", dir, commandPath));
-    command.category = Util.titleCase(dir);
+    command.category = client.util.titleCase(dir);
     client.categories[command.category].push(command.name);
     client.commands.set(command.name, command);
     command.aliases.forEach(alias => {
@@ -38,15 +39,12 @@ fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
   })
 })
 client.on('message', (message) => {
-  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing \`${Util.pickRandom(client.prefix)}help\` to see my commands!`);
-  
+  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing \`${client.util.getRandom(client.prefix)}help\` to see my commands!`);
   if (![client.user.toString(), ...client.prefix].some(p => message.content.split(" ")[0].startsWith(p.toLowerCase()))) return;
   const prefix = [client.user.toString(), ...client.prefix].find(p => message.content.split(" ")[0].startsWith(p.toLowerCase())).toLowerCase();
   const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0].toLowerCase();
-  
-  if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing \`${Util.pickRandom(client.prefix)}help\` to see what my commands are!`);
+  if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing \`${client.util.getRandom(client.prefix)}help\` to see what my commands are!`);
   const command = client.commands.has(invoke) ? client.commands.get(invoke) : client.commands.get(client.aliases.get(invoke));
-  
   const args = message.content.slice(invoke.length + prefix.length + 1).trim().split('"').map((e, i) => i % 2 === 0 ? e.trim().split(" ") : [e.trim()]).flat(1);
   message.prefix = prefix;
   message.invoke = invoke;
@@ -60,7 +58,6 @@ client.on('message', (message) => {
   });
 });
 client.login(process.env.TOKEN);
-
 const express = require("express");
 const fetch = require('node-fetch');
 const btoa = require('btoa'),
