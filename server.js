@@ -39,9 +39,11 @@ fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
   })
 })
 client.on('message', (message) => {
-  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing \`${client.util.getRandom(client.prefix)}help\` to see my commands!`);
-  if (![client.user.toString(), ...client.prefix].some(p => message.content.split(" ")[0].startsWith(p.toLowerCase()))) return;
-  const prefix = [client.user.toString(), ...client.prefix].find(p => message.content.split(" ")[0].startsWith(p.toLowerCase())).toLowerCase();
+  if (message.content.trim() === `<@!${client.user.id}>`) return message.channel.send(`Hey there! Try doing \`${client.util.getRandom(client.prefix)}help\` to see my commands!`);
+  const prefixes = [`<@!${client.user.id}>`, ...client.prefix];
+  console.log(message.content, prefixes, prefixes.find(p => message.content.startsWith(p.toLowerCase())));
+  if (!prefixes.some(p => message.content.startsWith(p.toLowerCase()))) return;
+  const prefix = prefixes.find(p => message.content.startsWith(p.toLowerCase())).toLowerCase();
   const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0].toLowerCase();
   if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing \`${client.util.getRandom(client.prefix)}help\` to see what my commands are!`);
   const command = client.commands.has(invoke) ? client.commands.get(invoke) : client.commands.get(client.aliases.get(invoke));
@@ -57,7 +59,7 @@ client.on('message', (message) => {
     console.error(err);
   });
 });
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_TOKEN);
 const express = require("express");
 const fetch = require('node-fetch');
 const btoa = require('btoa');
