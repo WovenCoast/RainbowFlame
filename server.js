@@ -76,6 +76,15 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
     .then(res => res.json())
     .catch(console.error);
   req.session.user = userData;
+  const guildData = await fetch('https://discordapp.com/api/users/@me/guilds', {
+    method: 'GET',
+    headers: {
+      Authorization: `${json.token_type} ${json.access_token}`
+    }
+  })
+    .then(res => res.json())
+    .catch(console.error);
+  req.session.user.guilds = guildData;
   res.redirect(`/?token=${json.access_token}`);
 }));
 
