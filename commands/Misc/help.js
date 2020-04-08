@@ -12,9 +12,13 @@ module.exports = {
       })
       return message.channel.send(embed);
     } else {
-      if (Object.keys(client.categories).some(category => category.toLowerCase() === args[0])) {
-        const embed = Discord.Message
+      const embed = new Discord.MessageEmbed().setColor(client.colors.info).setAuthor(`${message.author.tag} | Help`, message.author.displayAvatarURL());
+      if (Object.keys(client.categories).some(category => category.toLowerCase() === args[0].toLowerCase())) {
+        const category = Object.keys(client.categories).find(category => category.toLowerCase() === args[0].toLowerCase());
+        embed.setTitle(`${category}: ${client.categories[category].length} Commands`);
+        embed.setDescription(client.categories[category].map(commandName => `\`${commandName}\``).join(", "));
       }
+      return message.channel.send(embed);
     }
   }
 }
