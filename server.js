@@ -72,12 +72,11 @@ app.get('/api/discord/login', (req, res) => {
 app.get('/api/discord/callback', catchAsync(async (req, res) => {
   if (!req.query.code) throw new Error('NoCodeProvided');
   const code = req.query.code;
-  const creds = btoa(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`);
   const response = await fetch(`https://discordapp.com/api/oauth2/token?grant_type=authorization_code&code=${code}&redirect_uri=${'https://flamecord.glitch.me/api/discord/callback'}`,
     {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${creds}`,
+        Authorization: `Basic ${btoa(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`)}`,
       },
     });
   const json = await response.json();
@@ -100,8 +99,9 @@ app.get('/api/discord/callback', catchAsync(async (req, res) => {
   })
     .then(res => res.json())
     .catch(console.error);
-  req.session.user.guilds = guildData;
+  req.session.user.guilds = guildData.filter(g => !!client.guilds.resolve(g.id));
   res.redirect(req.session.redirectURL || 'https://flamecord.glitch.me/');
+  console.log(req.session.user);
   req.session.redirectURL = undefined;
 }));
 
