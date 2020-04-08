@@ -13,7 +13,6 @@ const client = new Discord.Client();
 client.prefix = ["!", "."];
 client.on('ready', () => {
   console.log(`Ready as ${client.user.tag}`);
-  client.prefix.unshift(client.user.toString());
 });
 client.commandsExec = 0;
 client.commandsSuccess = 0;
@@ -36,8 +35,8 @@ fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
 client.on('message', (message) => {
   if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing **${Util.pickRandom(client.prefix)} help** to see my commands!`);
   
-  if (!client.prefix.some(p => message.content.split(" ")[0].startsWith(p.toLowerCase()))) return;
-  const prefix = client.prefix.find(p => message.content.split(" ")[0].startsWith(p.toLowerCase())).toLowerCase();
+  if (![client.user.toString(), ...client.prefix].some(p => message.content.split(" ")[0].startsWith(p.toLowerCase()))) return;
+  const prefix = [client.user.toString(), ...client.prefix].find(p => message.content.split(" ")[0].startsWith(p.toLowerCase())).toLowerCase();
   const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0].toLowerCase();
   
   if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing **${prefix} help** to see what my commands are!`);
