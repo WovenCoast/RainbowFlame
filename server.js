@@ -1,5 +1,5 @@
-Array.prototype.random = () => {
-  return this[Math.floor(Math.random() * this.length)];
+function pickRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 const Discord = require('discord.js');
 const client = new Discord.Client();
@@ -10,7 +10,12 @@ client.on('ready', () => {
 });
 client.commands = new Discord.Collection();
 client.on('message', (message) => {
-  if (message.content === client.user.toString()) return message.channel.send(`Hey there! Try doing \`${client.prefix.random()}help\` to see my commands!`);
+  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing \`${pickRandom(client.prefix)}help\` to see my commands!`);
+  
+  if (!client.prefix.some(p => message.content.split(" ")[0].startsWith(p))) return;
+  const prefix = client.prefix.find(p => message.content.split(" ")[0].startsWith(p));
+  const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0];
+  console.log(prefix, invoke);
 });
 client.login(process.env.TOKEN);
 
