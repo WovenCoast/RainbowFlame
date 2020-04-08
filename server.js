@@ -14,6 +14,11 @@ client.prefix = ["!", "."];
 client.on('ready', () => {
   console.log(`Ready as ${client.user.tag}`);
 });
+client.colors = {
+  info: "#92DFF3",
+  error: "RED",
+  success: "GREEN"
+}
 client.commandsExec = 0;
 client.commandsSuccess = 0;
 client.commaandsFail = 0;
@@ -33,16 +38,16 @@ fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
   })
 })
 client.on('message', (message) => {
-  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing **${Util.pickRandom(client.prefix)} help** to see my commands!`);
+  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing \`${Util.pickRandom(client.prefix)}help\` to see my commands!`);
   
   if (![client.user.toString(), ...client.prefix].some(p => message.content.split(" ")[0].startsWith(p.toLowerCase()))) return;
   const prefix = [client.user.toString(), ...client.prefix].find(p => message.content.split(" ")[0].startsWith(p.toLowerCase())).toLowerCase();
   const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0].toLowerCase();
   
-  if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing **${prefix} help** to see what my commands are!`);
+  if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing \`${Util.pickRandom(client.prefix)}help\` to see what my commands are!`);
   const command = client.commands.has(invoke) ? client.commands.get(invoke) : client.commands.get(client.aliases.get(invoke));
   
-  const args = message.content.slice(invoke.length + prefix.length).trim().split('"').map((e, i) => i % 2 === 0 ? e.trim().split(" ") : [e.trim()]).flat(1);
+  const args = message.content.slice(invoke.length + prefix.length + 1).trim().split('"').map((e, i) => i % 2 === 0 ? e.trim().split(" ") : [e.trim()]).flat(1);
   message.prefix = prefix;
   message.invoke = invoke;
   message.args = args;
