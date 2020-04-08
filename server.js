@@ -1,5 +1,10 @@
-function pickRandom(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+class Util {
+  static pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+  static titleCase(string) {
+    return string[0].toUpperCase() + string.slice(1).toLowerCase();
+  }
 }
 const Discord = require('discord.js');
 const fs = require('fs');
@@ -10,21 +15,38 @@ client.on('ready', () => {
   console.log(`Ready as ${client.user.tag}`);
   client.prefix.unshift(client.user.toString());
 });
+client.commandsExec = 0;
+client.commandsSuccess = 0;
+client.commaandsFail = 0;
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
   fs.readdirSync(path.join(__dirname, "./commands", dir)).forEach(commandPath => {
     const command = require(path.join(__dirname, "./commands", dir, commandPath));
+    command.category = Util.titleCase(dir);
+    client.commands.set(command.name, command);
+    command.aliases.forEach(alias => {
+      client.aliases.set(alias, command.name);
+    })
   })
 })
 client.on('message', (message) => {
-  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing **${pickRandom(client.prefix)} help** to see my commands!`);
+  if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing **${Util.pickRandom(client.prefix)} help** to see my commands!`);
   
   if (!client.prefix.some(p => message.content.split(" ")[0].startsWith(p.toLowerCase()))) return;
   const prefix = client.prefix.find(p => message.content.split(" ")[0].startsWith(p.toLowerCase())).toLowerCase();
   const invoke = message.content.substr(prefix.length, message.content.length).trim().split(' ')[0].toLowerCase();
   
   if (!client.commands.has(invoke) && !client.aliases.has(invoke)) return message.channel.send(`**${invoke}** is not a valid command. Try doing **${prefix} help** to see what my commands are!`);
+  const command = client.commands.has(invoke) ? client.commands.get(invoke) : client.commands.get(client.aliases.get(invoke));
+  
+  client.commandsExec++;
+  command.exec(client, message).then(() => {
+    client.commandsSuccess++;
+  }).catch((err) => {
+    client.commandsFail++;
+    console.error(err);
+  });
 });
 client.login(process.env.TOKEN);
 

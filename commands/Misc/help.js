@@ -1,7 +1,8 @@
 module.exports = {
   name: "help",
   aliases: ["h"],
-  exec(message, args) {
+  async exec(client, message) {
+    
     message.channel.send("test");
   }
 }
