@@ -12,8 +12,10 @@ client.on('ready', () => {
 });
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
-fs.readDirSync(path.join(__dirname, "./commands")).forEach(dir => {
-  
+fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
+  fs.readdirSync(path.join(__dirname, "./commands", dir)).forEach(commandPath => {
+    const command = require(path.join(__dirname, "./commands", dir, commandPath));
+  })
 })
 client.on('message', (message) => {
   if (message.content.trim() === client.user.toString()) return message.channel.send(`Hey there! Try doing **${pickRandom(client.prefix)} help** to see my commands!`);
