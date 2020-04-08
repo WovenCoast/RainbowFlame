@@ -1,5 +1,5 @@
 {
-  "name": "wovenbot",
+  "name": "flamebot",
   "version": "0.0.1",
   "description": "A simple Node app built on Express, instantly up and running.",
   "main": "server.js",
@@ -14,7 +14,7 @@
     "node": "12.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/wovenbot"
+    "url": "https://glitch.com/edit/#!/flamebot"
   },
   "license": "MIT",
   "keywords": [
