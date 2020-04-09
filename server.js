@@ -39,8 +39,9 @@ fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
   })
 })
 client.on('message', (message) => {
-  if (message.content.trim() === `<@!${client.user.id}>`) return message.channel.send(`Hey there! Try doing \`${client.util.getRandom(client.prefix)}help\` to see my commands!`);
-  const prefixes = [`<@!${client.user.id}>`, ...client.prefix];
+  if (message.author.bot) return;
+  if (message.content.trim() === `<@${client.user.id}>` || message.content.trim() === `<@!${client.user.id}>`) return message.channel.send(`Hey there! Try doing \`${client.util.getRandom(client.prefix)}help\` to see my commands!`);
+  const prefixes = [`<@${client.user.id}>`, `<@!${client.user.id}>`, ...client.prefix];
   console.log(message.content, prefixes, prefixes.find(p => message.content.startsWith(p.toLowerCase())));
   if (!prefixes.some(p => message.content.startsWith(p.toLowerCase()))) return;
   const prefix = prefixes.find(p => message.content.startsWith(p.toLowerCase())).toLowerCase();
