@@ -80,6 +80,8 @@ async function play(client, message, url) {
       } else if (serverQueue.loop === "shuffle") {
         serverQueue.songs.shift();
         serverQueue.songs = shuffle(serverQueue.songs);
+      } else if (serverQueue.loop === "shuffleall") {
+        serverQueue.songs = shuffle(serverQueue.songs);
       } else if (serverQueue.loop === "one") {
         serverQueue.songs.unshift(serverQueue.songs.shift());
       }
