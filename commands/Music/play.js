@@ -84,6 +84,7 @@ async function play(client, message, url) {
       }
       if (!serverQueue.songs[0]) {
         message.guild.me.voice.channel.leave();
+        client.queue.delete(message.guild.id);
         return message.channel.send(":white_check_mark: Nothing more to play, quitting voice channel")
       };
       const newDispatcher = await serverQueue.connection.play(
