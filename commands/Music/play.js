@@ -52,7 +52,7 @@ module.exports = {
 async function play(client, message, url) {
   const info = await ytdl.getInfo(url);
   if (info.player_response.videoDetails.isLiveContent) throw new Error("Cannot play live feed from YouTube");
-  const song = { url, duration: parseInt(info.player_response.lengthSeconds), author: info.player_response.videoDetails.author, title: info.player_response.videoDetails.title, requestedBy: message.author.tag };
+  const song = { url, duration: parseInt(info.length_seconds), author: info.author.name, title: info.title, requestedBy: message.author.tag };
   if (!client.queue.has(message.guild.id)) {
     const connection = await message.member.voice.channel.join();
     message.guild.me.voice.setSelfDeaf(true);
@@ -69,7 +69,7 @@ async function play(client, message, url) {
     };
     // dispatcher.setVolume(dispatcher.volume - serverQueue.volume / 100);
     client.queue.set(message.guild.id, serverQueue);
-    message.channel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
+    message.channel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by **${serverQueue.songs[0].requestedBy}**`);
     message.channel.stopTyping(true);
     dispatcher.on("finish", songFinished);
     async function songFinished() {
@@ -97,14 +97,14 @@ async function play(client, message, url) {
       newDispatcher.on('finish', songFinished);
       newDispatcher.setVolume(serverQueue.volume);
       serverQueue.dispatcher = newDispatcher;
-      message.channel.send(`:arrow_forward: Now Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
+      message.channel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by **${serverQueue.songs[0].requestedBy}**`);
       client.queue.set(message.guild.id, serverQueue);
     }
   } else {
     const serverQueue = client.queue.get(message.guild.id);
     serverQueue.songs.push(song);
     client.queue.set(message.guild.id, serverQueue);
-    message.channel.send(`:white_check_mark: Added to queue ${parseSongName(song.title, song.author)} requested by ${song.requestedBy}`);
+    message.channel.send(`:white_check_mark: Added to queue ${parseSongName(song.title, song.author)} requested by **${song.requestedBy}**`);
     message.channel.stopTyping(true);
   }
 }
