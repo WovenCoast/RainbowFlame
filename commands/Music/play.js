@@ -12,11 +12,10 @@ module.exports = {
       throw new Error("You need to provide a search string or a YouTube URL!");
     if (!message.member.voice.channel)
       throw new Error("You are not in a voice channel!");
-    let url = args[0];
-    if (url.startsWith("http")) {
+    if (args[0].startsWith("http")) {
       if (!(await ytdl.validateURL(args[0])))
         throw new Error("The URL must be a valid YouTube video URL!");
-      return play(url);
+      return play(client, message, args[0]);
     }
     let res = await search(args.join(" "));
     let videos = res.videos.slice(0, 10);
