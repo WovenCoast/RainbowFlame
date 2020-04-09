@@ -1,9 +1,16 @@
 class Util {
+  constructor(client) {
+    this.client = client;
+  }
   getRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
   titleCase(string) {
     return string[0].toUpperCase() + string.slice(1).toLowerCase();
+  }
+  pluralify(amount, string) {
+    if (amount === 1) return amount + " " + string;
+    else return amount + " " + string + "s";
   }
 }
 const Discord = require('discord.js');
@@ -25,7 +32,7 @@ client.commaandsFail = 0;
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 client.categories = {};
-client.util = new Util();
+client.util = new Util(client);
 fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
   client.categories[client.util.titleCase(dir)] = [];
   fs.readdirSync(path.join(__dirname, "./commands", dir)).forEach(commandPath => {
@@ -57,7 +64,7 @@ client.on('message', (message) => {
     client.commandsSuccess++;
   }).catch((err) => {
     client.commandsFail++;
-    console.error(err);
+    message.channel.send(new Discord.MessageEmbed().setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`).setColor(client.colors.error).setDescription(err));
   });
 });
 client.login(process.env.DISCORD_TOKEN);

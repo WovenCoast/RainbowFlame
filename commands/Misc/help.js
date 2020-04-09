@@ -9,14 +9,14 @@ module.exports = {
       const embed = new Discord.MessageEmbed().setColor(client.colors.info).setAuthor(`${message.author.tag} | Help`, message.author.displayAvatarURL());
       Object.keys(client.categories).forEach(category => {
         const commands = client.commands.filter(command => command.category === category);
-        embed.addField(`**${category}**: ${commands.size} Commands`, commands.map(command => `\`${command.name}\``).join(", "));
+        embed.addField(`**${category}**: ${client.util.pluralify(commands.size, "Command")}`, commands.map(command => `\`${command.name}\``).join(", "));
       })
       return message.channel.send(embed);
     } else {
       const embed = new Discord.MessageEmbed().setColor(client.colors.info).setAuthor(`${message.author.tag} | Help`, message.author.displayAvatarURL());
       if (Object.keys(client.categories).some(category => category.toLowerCase() === args[0].toLowerCase())) {
         const category = Object.keys(client.categories).find(category => category.toLowerCase() === args[0].toLowerCase());
-        embed.setTitle(`**${category}**: ${client.categories[category].length} Commands`);
+        embed.setTitle(`**${category}**: ${client.util.pluralify(client.categories[category].length, "Command")}`);
         embed.setDescription(client.categories[category].map(commandName => `\`${commandName}\``).join(", "));
       } else if (client.commands.has(args[0].toLowerCase()) || client.aliases.has(args[0].toLowerCase())) {
         const command = client.commands.has(args[0].toLowerCase()) ? client.commands.get(args[0].toLowerCase()) : client.commands.get(client.aliases.get(args[0].toLowerCase()));
