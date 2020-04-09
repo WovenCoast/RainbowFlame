@@ -20,6 +20,7 @@ module.exports = {
     }
     let res = await search(args.join(" "));
     let videos = res.videos.slice(0, 10);
+    message.channel.startTyping();
     const requestMsg = await message.channel.send(
       new Discord.MessageEmbed()
         .setTimestamp()
@@ -52,7 +53,7 @@ module.exports = {
 async function play(client, message, url) {
   const info = await ytdl.getInfo(url);
   if (info.player_response.videoDetails.isLiveContent) throw new Error("Cannot play live feed from YouTube");
-  console.log(info);
+  const song = { url, duration: parseInt(info.player_response.lengthSeconds), author: info.player_response.videoDetails.author, title: info.player_response.videoDetails.title, requestedBy: message.author.tag };
   if (!client.queue.has(message.guild.id)) {
     const connection = await message.member.voice.channel.join();
     const dispatcher = await connection.play(
@@ -61,14 +62,15 @@ async function play(client, message, url) {
     const serverQueue = {
       connection,
       dispatcher,
-      voiceChannel: message.member.voiceChannel,
+      voiceChannel: message.member.voice.channel,
       loop: "noloop",
       volume: 100,
-      songs: [{ url, author: info.player_response requestedBy: message.author.tag }]
+      songs: [song]
     };
-    dispatcher.setVolume(dispatcher.volume - serverQueue.volume / 100);
+    // dispatcher.setVolume(dispatcher.volume - serverQueue.volume / 100);
     client.queue.set(message.guild.id, serverQueue);
-    message.channel.send(`:arrow_forward: Playing some song, even I don't know what the song is`);
+    message.channel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
+    message.channel.stopTyping(true);
     dispatcher.once("finish", async () => {
       const serverQueue = client.queue.get(message.guild.id);
       if (serverQueue.loop === "noloop") {
@@ -84,12 +86,15 @@ async function play(client, message, url) {
         serverQueue.songs[0].url
       );
       serverQueue.dispatcher = newDispatcher;
+      message.channel.send(`:arrow_forward: Now Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
       client.queue.set(message.guild.id, serverQueue);
     });
   } else {
     const serverQueue = client.queue.get(message.guild.id);
-    serverQueue.songs.push({ url, requestedBy: message.author.tag });
+    serverQueue.songs.push(song);
     client.queue.set(message.guild.id, serverQueue);
+    message.channel.send(`:white_check_mark: Added to queue ${parseSongName(song.title, song.author)} requested by ${song.requestedBy}`);
+    message.channel.stopTyping(true);
   }
 }
 
@@ -110,6 +115,6 @@ function shuffle(array) {
 
   return tempArray;
 }
-function parseSongName(name, author) {
-  return name.includes(author) ? name.replace(author,`**${author}**`) : `**${name}** by *${author}*` 
+function parseSongName(title, author) {
+  return title.includes(author) ? title.replace(author,`**${author}**`) : `**${title}** by *${author}*` 
 }
