@@ -51,6 +51,7 @@ client.colors = {
 client.commandsExec = 0;
 client.commandsSuccess = 0;
 client.commaandsFail = 0;
+client.minimumDelay = 2;
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 client.categories = {};
@@ -74,7 +75,7 @@ fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
     }
   );
 });
-client.on("message", message => {
+client.on("message", async message => {
   if (message.author.bot) return;
   if (
     message.content.trim() === `<@${client.user.id}>` ||
@@ -118,22 +119,28 @@ client.on("message", message => {
   message.invoke = invoke;
   message.args = args;
   client.commandsExec++;
+  const loadingMsg = await message.channel.send("Executing...");
   message.channel.startTyping();
-  command
-    .exec(client, message, args)
-    .then(() => {
-      client.commandsSuccess++;
-      message.channel.stopTyping(true);
-    })
-    .catch(err => {
-      client.commandsFail++;
-      message.channel.send(
-        new Discord.MessageEmbed()
-          .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
-          .setColor(client.colors.error)
-          .setDescription(err)
-      );
-    });
+  setTimeout(() => {
+    command
+      .exec(client, message, args)
+      .then(() => {
+        client.commandsSuccess++;
+        loadingMsg.delete();
+        message.channel.stopTyping(true);
+      })
+      .catch(err => {
+        client.commandsFail++;
+        loadingMsg.delete();
+        message.channel.stopTyping(true);
+        message.channel.send(
+          new Discord.MessageEmbed()
+            .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
+            .setColor(client.colors.error)
+            .setDescription(err)
+        );
+      });
+  }, (command.cooldown || client.minimumDelay) * 1000);
 });
 client.login(process.env.DISCORD_TOKEN);
 const express = require("express");
