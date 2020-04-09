@@ -71,9 +71,9 @@ async function play(client, message, url) {
     client.queue.set(message.guild.id, serverQueue);
     message.channel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
     message.channel.stopTyping(true);
-    dispatcher.on("finish", async () => {
+    dispatcher.on("finish", songFinished);
+    async function songFinished() {
       const serverQueue = client.queue.get(message.guild.id);
-      console.log(serverQueue);
       if (serverQueue.loop === "noloop") {
         serverQueue.songs.shift();
       } else if (serverQueue.loop === "all") {
@@ -94,11 +94,12 @@ async function play(client, message, url) {
       const newDispatcher = await serverQueue.connection.play(
         ytdl(serverQueue.songs[0].url, { filter: "audioonly", quality: "highestaudio" })
       );
+      newDispatcher.on('finish', songFinished);
       newDispatcher.setVolume(serverQueue.volume);
       serverQueue.dispatcher = newDispatcher;
       message.channel.send(`:arrow_forward: Now Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
       client.queue.set(message.guild.id, serverQueue);
-    });
+    }
   } else {
     const serverQueue = client.queue.get(message.guild.id);
     serverQueue.songs.push(song);

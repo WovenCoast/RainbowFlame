@@ -7,6 +7,7 @@ module.exports = {
     if (!serverQueue) throw new Error("This command only works when I'm in a voice channel, try using the `play` command!");
     let count = 1;
     if (args[0] && !isNaN(args[0])) count = parseInt(args[0]);
+    if (count > 32768) throw new Error("The maximum amount of songs skippable is 32768 songs!");
     for (let i = 0; i < count - 1; i++) {
       if (serverQueue.loop === "noloop") {
         serverQueue.songs.shift();
