@@ -15,7 +15,10 @@ module.exports = {
     if (message.guild.me.voiceChannel !== message.member.voiceChannel)
       throw new Error("You aren't in the same channel as me!");
     let url = args;
-    if (url.startsWith("http")) return play(url);
+    if (url.startsWith("http")) {
+      if (!(await ytdl.validateURL(args[0]))) throw new Error("The URL must be a valid YouTube video URL!");
+      return play(url);
+    };
     let res = await search(args.join(" "));
     let videos = res.videos.slice(0, 10);
     const requestMsg = message.channel.send(
@@ -53,6 +56,16 @@ module.exports = {
   }
 };
 
-function play(client, message, url) {
-  
+async function play(client, message, url) {
+  if (!client.queue.has(message.guild.id)) {
+    const connection = await message.member.voiceChannel.join();
+    client.queue.set(message.guild.id, {
+      connection: connection,
+      dispatcher: connection.dispatcher,
+      songs: [
+        {url}
+      ]
+    })
+  }
+  const info = await ytdl.getInfo(url);
 }
