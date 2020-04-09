@@ -119,15 +119,44 @@ client.on("message", async message => {
   message.prefix = prefix;
   message.invoke = invoke;
   message.args = args;
-  if (client.cooldown.has(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`)) {
-    const timeGone = Date.now() - client.cooldown.get(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`) / 1000;
-    if (timeGone + 1 > (command.cooldown || client.defaultCooldown)) client.cooldown.set(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`, Date.now());
-    else return message.channel.send(new Discord.MessageEmbed().setTimestamp()
+  client.cooldown.forEach((cooldown, id) => {
+    if (cooldown > )
+  })
+  if (
+    client.cooldown.has(
+      `${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`
+    )
+  ) {
+    const timeGone =
+      (Date.now() -
+      client.cooldown.get(
+        `${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`
+      )) /
+        1000;
+    if (timeGone + 1 > (command.cooldown || client.defaultCooldown))
+      client.cooldown.set(
+        `${message.author.id}-${
+          message.guild.id
+        }-${command.name.toLowerCase()}`,
+        Date.now()
+      );
+    else
+      return message.channel.send(
+        new Discord.MessageEmbed()
+          .setTimestamp()
           .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
           .setColor(client.colors.error)
-          .setDescription(`Error: You need to wait ${(command.cooldown || client.defaultCooldown) - timeGone} more seconds before you can use that command!`))
+          .setDescription(
+            `Error: You need to wait ${client.util.pluralify(Math.floor((command.cooldown ||
+              client.defaultCooldown) -
+              timeGone), 'more second')} before you can use that command!`
+          )
+      );
   } else {
-    client.cooldown.set(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`, Date.now());
+    client.cooldown.set(
+      `${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`,
+      Date.now()
+    );
   }
   client.commandsExec++;
   command
@@ -138,7 +167,8 @@ client.on("message", async message => {
     .catch(err => {
       client.commandsFail++;
       message.channel.send(
-        new Discord.MessageEmbed().setTimestamp()
+        new Discord.MessageEmbed()
+          .setTimestamp()
           .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
           .setColor(client.colors.error)
           .setDescription(err)
