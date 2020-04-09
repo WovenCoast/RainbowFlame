@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 
 module.exports = {
   name: "help",
-  aliases: ["h"],
+  aliases: ["h",'help'],
   usage: "{prefix}help [command|category]",
   async exec(client, message, args) {
     if (!args[0]) {

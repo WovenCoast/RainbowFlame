@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 
 module.exports = {
   name: "stats",
-  aliases: [],
+  aliases: ['info', 'stat'], 
   desc: "View the stats of this bot",
   async exec(client, message, args) {
     console.log(process);
