@@ -14,7 +14,8 @@
     "node-fetch": "^2.6.0",
     "btoa": "^1.2.1",
     "express-session": "^1.16.1",
-    "ytdl-core": "^2.0.1"
+    "ytdl-core": "^2.0.1",
+    "yt-search": "^1.1.2"
   },
   "engines": {
     "node": "12.x"
