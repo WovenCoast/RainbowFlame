@@ -1,4 +1,4 @@
-const validStates = ["noloop", "loopall", "shuffle", "loopone"];
+const validStates = ["noloop", "all", "shuffle", "one"];
 
 module.exports = {
   name: "loop",

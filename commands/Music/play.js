@@ -76,11 +76,12 @@ async function play(client, message, url) {
       const serverQueue = client.queue.get(message.guild.id);
       if (serverQueue.loop === "noloop") {
         serverQueue.songs.shift();
-      } else if (serverQueue.loop === "loopall") {
+      } else if (serverQueue.loop === "all") {
         serverQueue.songs.push(serverQueue.songs.shift());
       } else if (serverQueue.loop === "shuffle") {
+        serverQueue.songs.shift();
         serverQueue.songs = shuffle(serverQueue.songs);
-      } else if (serverQueue.loop === "loopone") {
+      } else if (serverQueue.loop === "one") {
         serverQueue.songs.unshift(serverQueue.songs.shift());
       }
       if (!serverQueue.songs[0]) {
