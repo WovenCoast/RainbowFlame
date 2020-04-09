@@ -59,13 +59,28 @@ module.exports = {
 async function play(client, message, url) {
   if (!client.queue.has(message.guild.id)) {
     const connection = await message.member.voiceChannel.join();
-    client.queue.set(message.guild.id, {
-      connection: connection,
-      dispatcher: connection.dispatcher,
+    const dispatcher = await connection.play(ytdl(url, { filter: 'audioonly' }));
+    const serverQueue = {
+      connection,
+      dispatcher,
+      voiceChannel: message.member.voiceChannel,
+      loop: "noloop",
       songs: [
-        {url}
+        {url, requestedBy: message.author.tag}
       ]
-    })
+    };
+    client.queue.set(message.guild.id, serverQueue);
+    dispatcher.once('finish', () => {
+      const serverQueue = client.queue.get(message.guild.id);
+      if (serverQueue.loop === "noloop") {
+          serverQueue.songs.shift()
+      } else if (serverQueue.loop === "loopall") {
+        
+      }
+    });
+  } else {
+    const serverQueue = client.queue.get(message.guild.id);
+    serverQueue.songs.push({ url, requestedBy: message.author.tag });
+    client.queue.set(message.guild.id, serverQueue);
   }
-  const info = await ytdl.getInfo(url);
 }
