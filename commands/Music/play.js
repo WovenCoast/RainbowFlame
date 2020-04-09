@@ -24,7 +24,7 @@ module.exports = {
       new Discord.MessageEmbed()
         .setTimestamp()
         .setAuthor(
-          `${message.author} | Choose a Song`,
+          `${message.author.tag} | Choose a Song`,
           message.author.displayAvatarURL()
         )
         .setColor(client.colors.info)
@@ -32,14 +32,7 @@ module.exports = {
         .setDescription(
           videos.map(
             (video, index) =>
-              `**${index + 1}**: ${
-                video.title.includes(video.author.name)
-                  ? video.title.replace(
-                      video.author.name,
-                      `**${video.author.name}**`
-                    )
-                  : `**${video.title}** by *${video.author.name}*`
-              }`
+              `**${index + 1}**: ${parseSongName(video.title, video.author.name)}`
           )
         )
     );
@@ -50,12 +43,16 @@ module.exports = {
     collector.once("collect", m => {
       const song = videos[parseInt(m.content) - 1];
       requestMsg.delete();
+      m.delete();
       play(client, message, song.url);
     });
   }
 };
 
 async function play(client, message, url) {
+  const info = await ytdl.getInfo(url);
+  if (info.player_response.videoDetails.isLiveContent) throw new Error("Cannot play live feed from YouTube");
+  console.log(info);
   if (!client.queue.has(message.guild.id)) {
     const connection = await message.member.voice.channel.join();
     const dispatcher = await connection.play(
@@ -67,11 +64,11 @@ async function play(client, message, url) {
       voiceChannel: message.member.voiceChannel,
       loop: "noloop",
       volume: 100,
-      songs: [{ url, requestedBy: message.author.tag }]
+      songs: [{ url, author: info.player_response requestedBy: message.author.tag }]
     };
-    dispatcher.volume(dispatcher.volume - serverQueue.volume / 100);
+    dispatcher.setVolume(dispatcher.volume - serverQueue.volume / 100);
     client.queue.set(message.guild.id, serverQueue);
-    message.channel.send("");
+    message.channel.send(`:arrow_forward: Playing some song, even I don't know what the song is`);
     dispatcher.once("finish", async () => {
       const serverQueue = client.queue.get(message.guild.id);
       if (serverQueue.loop === "noloop") {
@@ -112,4 +109,7 @@ function shuffle(array) {
   }
 
   return tempArray;
+}
+function parseSongName(name, author) {
+  return name.includes(author) ? name.replace(author,`**${author}**`) : `**${name}** by *${author}*` 
 }
