@@ -120,8 +120,8 @@ client.on("message", async message => {
   message.invoke = invoke;
   message.args = args;
   client.cooldown.forEach((cooldown, id) => {
-    if (cooldown > )
-  })
+    if (((Date.now() - cooldown) / 1000) > 100) client.cooldown.delete(id);
+  });
   if (
     client.cooldown.has(
       `${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`
@@ -129,10 +129,12 @@ client.on("message", async message => {
   ) {
     const timeGone =
       (Date.now() -
-      client.cooldown.get(
-        `${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`
-      )) /
-        1000;
+        client.cooldown.get(
+          `${message.author.id}-${
+            message.guild.id
+          }-${command.name.toLowerCase()}`
+        )) /
+      1000;
     if (timeGone + 1 > (command.cooldown || client.defaultCooldown))
       client.cooldown.set(
         `${message.author.id}-${
@@ -144,12 +146,18 @@ client.on("message", async message => {
       return message.channel.send(
         new Discord.MessageEmbed()
           .setTimestamp()
-          .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
+          .setAuthor(
+            `${message.author.tag} | ${client.util.titleCase(invoke)}`,
+            message.author.displayAvatarURL()
+          )
           .setColor(client.colors.error)
           .setDescription(
-            `Error: You need to wait ${client.util.pluralify(Math.floor((command.cooldown ||
-              client.defaultCooldown) -
-              timeGone), 'more second')} before you can use that command!`
+            `Error: You need to wait ${client.util.pluralify(
+              Math.floor(
+                (command.cooldown || client.defaultCooldown) - timeGone
+              ),
+              "more second"
+            )} before you can use that command!`
           )
       );
   } else {
