@@ -56,6 +56,7 @@ async function play(client, message, url) {
   const song = { url, duration: parseInt(info.player_response.lengthSeconds), author: info.player_response.videoDetails.author, title: info.player_response.videoDetails.title, requestedBy: message.author.tag };
   if (!client.queue.has(message.guild.id)) {
     const connection = await message.member.voice.channel.join();
+    message.guild.me.voice.setSelfDeaf(true);
     const dispatcher = await connection.play(
       ytdl(url, { filter: "audioonly", quality: "highestaudio" })
     );
