@@ -64,7 +64,7 @@ async function play(client, message, url) {
       dispatcher,
       voiceChannel: message.member.voice.channel,
       loop: "noloop",
-      volume: 100,
+      volume: 1.00,
       songs: [song]
     };
     // dispatcher.setVolume(dispatcher.volume - serverQueue.volume / 100);
@@ -91,6 +91,7 @@ async function play(client, message, url) {
       const newDispatcher = await serverQueue.connection.play(
         ytdl(serverQueue.songs[0].url, { filter: "audioonly", quality: "highestaudio" })
       );
+      newDispatcher.setVolume(serverQueue.volume);
       serverQueue.dispatcher = newDispatcher;
       message.channel.send(`:arrow_forward: Now Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
       client.queue.set(message.guild.id, serverQueue);
