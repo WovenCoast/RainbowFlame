@@ -54,6 +54,7 @@ client.commaandsFail = 0;
 client.minimumDelay = 2;
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
+client.cooldown = new Discord.Collection();
 client.categories = {};
 client.util = new Util(client);
 fs.readdirSync(path.join(__dirname, "./commands")).forEach(dir => {
@@ -118,7 +119,12 @@ client.on("message", async message => {
   message.prefix = prefix;
   message.invoke = invoke;
   message.args = args;
-  if (client.cooldown.includes(`${message.author.id}-${message.guild.id}`))
+  if (client.cooldown.has(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`)) {
+    const timeLeft = Date.now() - client.cooldown.get(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`) / 1000;
+    // return message.channel.send()
+  } else {
+    client.cooldown.set(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`, Date.now());
+  }
   client.commandsExec++;
   command
     .exec(client, message, args)
