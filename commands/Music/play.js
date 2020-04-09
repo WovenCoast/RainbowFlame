@@ -57,7 +57,7 @@ async function play(client, message, url) {
   if (!client.queue.has(message.guild.id)) {
     const connection = await message.member.voice.channel.join();
     const dispatcher = await connection.play(
-      ytdl(url, { filter: "audioonly" })
+      ytdl(url, { filter: "audioonly", quality: "highestaudio" })
     );
     const serverQueue = {
       connection,
@@ -82,8 +82,12 @@ async function play(client, message, url) {
       } else if (serverQueue.loop === "loopone") {
         serverQueue.songs.unshift(serverQueue.songs.shift());
       }
+      if (!serverQueue.songs[0]) {
+        message.guild.me.voice.channel.leave();
+        return message.channel.send(":white_check_mark: Nothing more to play, quitting voice channel")
+      };
       const newDispatcher = await serverQueue.connection.play(
-        serverQueue.songs[0].url
+        ytdl(serverQueue.songs[0].url, { filter: "audioonly", quality: "highestaudio" })
       );
       serverQueue.dispatcher = newDispatcher;
       message.channel.send(`:arrow_forward: Now Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
