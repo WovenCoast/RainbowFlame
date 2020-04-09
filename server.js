@@ -51,7 +51,7 @@ client.colors = {
 client.commandsExec = 0;
 client.commandsSuccess = 0;
 client.commaandsFail = 0;
-client.minimumDelay = 2;
+client.defaultCooldown = 2;
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
 client.cooldown = new Discord.Collection();
@@ -120,8 +120,12 @@ client.on("message", async message => {
   message.invoke = invoke;
   message.args = args;
   if (client.cooldown.has(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`)) {
-    const timeLeft = Date.now() - client.cooldown.get(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`) / 1000;
-    // return message.channel.send()
+    const timeGone = Date.now() - client.cooldown.get(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`) / 1000;
+    if (timeGone + 1 > (command.cooldown || client.defaultCooldown)) client.cooldown.set(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`, Date.now());
+    else return message.channel.send(new Discord.MessageEmbed().setTimestamp()
+          .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
+          .setColor(client.colors.error)
+          .setDescription(`Error: You need to wait ${(command.cooldown || client.defaultCooldown) - timeGone} more seconds before you can use that command!`))
   } else {
     client.cooldown.set(`${message.author.id}-${message.guild.id}-${command.name.toLowerCase()}`, Date.now());
   }
@@ -134,7 +138,7 @@ client.on("message", async message => {
     .catch(err => {
       client.commandsFail++;
       message.channel.send(
-        new Discord.MessageEmbed()
+        new Discord.MessageEmbed().setTimestamp()
           .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
           .setColor(client.colors.error)
           .setDescription(err)
