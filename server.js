@@ -118,29 +118,22 @@ client.on("message", async message => {
   message.prefix = prefix;
   message.invoke = invoke;
   message.args = args;
+  if (client.cooldown.includes(`${message.author.id}-${message.guild.id}`))
   client.commandsExec++;
-  const loadingMsg = await message.channel.send("Executing...");
-  message.channel.startTyping();
-  setTimeout(() => {
-    command
-      .exec(client, message, args)
-      .then(() => {
-        client.commandsSuccess++;
-        loadingMsg.delete();
-        message.channel.stopTyping(true);
-      })
-      .catch(err => {
-        client.commandsFail++;
-        loadingMsg.delete();
-        message.channel.stopTyping(true);
-        message.channel.send(
-          new Discord.MessageEmbed()
-            .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
-            .setColor(client.colors.error)
-            .setDescription(err)
-        );
-      });
-  }, (command.cooldown || client.minimumDelay) * 1000);
+  command
+    .exec(client, message, args)
+    .then(() => {
+      client.commandsSuccess++;
+    })
+    .catch(err => {
+      client.commandsFail++;
+      message.channel.send(
+        new Discord.MessageEmbed()
+          .setAuthor(`${message.author.tag} | ${client.util.titleCase(invoke)}`)
+          .setColor(client.colors.error)
+          .setDescription(err)
+      );
+    });
 });
 client.login(process.env.DISCORD_TOKEN);
 const express = require("express");
