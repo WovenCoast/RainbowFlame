@@ -71,8 +71,9 @@ async function play(client, message, url) {
     client.queue.set(message.guild.id, serverQueue);
     message.channel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by ${serverQueue.songs[0].requestedBy}`);
     message.channel.stopTyping(true);
-    dispatcher.once("finish", async () => {
+    dispatcher.on("finish", async () => {
       const serverQueue = client.queue.get(message.guild.id);
+      console.log(serverQueue);
       if (serverQueue.loop === "noloop") {
         serverQueue.songs.shift();
       } else if (serverQueue.loop === "all") {
