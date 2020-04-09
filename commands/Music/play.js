@@ -10,18 +10,17 @@ module.exports = {
   async exec(client, message, args) {
     if (!args[0])
       throw new Error("You need to provide a search string or a YouTube URL!");
-    if (!message.member.voiceChannel)
+    if (!message.member.voice.channel)
       throw new Error("You are not in a voice channel!");
-    if (message.guild.me.voiceChannel !== message.member.voiceChannel)
-      throw new Error("You aren't in the same channel as me!");
-    let url = args;
+    let url = args[0];
     if (url.startsWith("http")) {
-      if (!(await ytdl.validateURL(args[0]))) throw new Error("The URL must be a valid YouTube video URL!");
+      if (!(await ytdl.validateURL(args[0])))
+        throw new Error("The URL must be a valid YouTube video URL!");
       return play(url);
-    };
+    }
     let res = await search(args.join(" "));
     let videos = res.videos.slice(0, 10);
-    const requestMsg = message.channel.send(
+    const requestMsg = await message.channel.send(
       new Discord.MessageEmbed()
         .setTimestamp()
         .setAuthor(
@@ -50,37 +49,67 @@ module.exports = {
     );
     collector.once("collect", m => {
       const song = videos[parseInt(m.content) - 1];
-      url = song.url;
-      play(client, message, url);
+      requestMsg.delete();
+      play(client, message, song.url);
     });
   }
 };
 
 async function play(client, message, url) {
   if (!client.queue.has(message.guild.id)) {
-    const connection = await message.member.voiceChannel.join();
-    const dispatcher = await connection.play(ytdl(url, { filter: 'audioonly' }));
+    const connection = await message.member.voice.channel.join();
+    const dispatcher = await connection.play(
+      ytdl(url, { filter: "audioonly" })
+    );
     const serverQueue = {
       connection,
       dispatcher,
       voiceChannel: message.member.voiceChannel,
       loop: "noloop",
-      songs: [
-        {url, requestedBy: message.author.tag}
-      ]
+      volume: 100,
+      songs: [{ url, requestedBy: message.author.tag }]
     };
+    dispatcher.volume(dispatcher.volume - serverQueue.volume / 100);
     client.queue.set(message.guild.id, serverQueue);
-    dispatcher.once('finish', () => {
+    message.channel.send("");
+    dispatcher.once("finish", async () => {
       const serverQueue = client.queue.get(message.guild.id);
       if (serverQueue.loop === "noloop") {
-          serverQueue.songs.shift()
+        serverQueue.songs.shift();
       } else if (serverQueue.loop === "loopall") {
-        
+        serverQueue.songs.push(serverQueue.songs.shift());
+      } else if (serverQueue.loop === "shuffle") {
+        serverQueue.songs = shuffle(serverQueue.songs);
+      } else if (serverQueue.loop === "loopone") {
+        serverQueue.songs.unshift(serverQueue.songs.shift());
       }
+      const newDispatcher = await serverQueue.connection.play(
+        serverQueue.songs[0].url
+      );
+      serverQueue.dispatcher = newDispatcher;
+      client.queue.set(message.guild.id, serverQueue);
     });
   } else {
     const serverQueue = client.queue.get(message.guild.id);
     serverQueue.songs.push({ url, requestedBy: message.author.tag });
     client.queue.set(message.guild.id, serverQueue);
   }
+}
+
+function shuffle(array) {
+  const tempArray = Object.assign([], array);
+  var currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
+
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    temporaryValue = tempArray[currentIndex];
+    tempArray[currentIndex] = tempArray[randomIndex];
+    tempArray[randomIndex] = temporaryValue;
+  }
+
+  return tempArray;
 }
