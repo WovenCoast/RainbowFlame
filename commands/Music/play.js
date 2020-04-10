@@ -14,8 +14,8 @@ module.exports = {
       throw new Error("You are not in a voice channel!");
     if (args[0].startsWith("http")) {
       if (!(await ytdl.validateURL(args[0])))
-        throw new Error("The URL must be a valid YouTube video URL!");
-      return play(client, message, args[0]);
+        throw new Error("The URL must be a valid YouTube video URL!");  //smort stuff
+      return play(client, message, args[0]); //this return should be out of if statement imo
     }
     let res = await search(args.join(" "));
     let videos = res.videos.slice(0, 10);
