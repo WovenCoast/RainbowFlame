@@ -29,6 +29,10 @@
       margin: 2rem 4rem;
       justify-content: space-between;
       align-items: center;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
     
     .logo {
@@ -47,10 +51,19 @@
       color: transparent;
     }
     
+/*     .flameText {
+      font-weight: 700;
+      font-size: 2rem;
+      background-image: linear-gradient(to top, red, yellow);   
+      -webkit-background-clip: text;
+      -moz-background-clip: text; 
+      background-clip: text;
+      color: transparent;
+    } */
+    
     .logo-img {
       width: 5rem;
       height: 5rem;
-      
       margin: 0 1rem;
     }
     
@@ -63,7 +76,7 @@
     .nav-items a {
       color: var(--text-primary);
       text-decoration: none;
-      
+      text-transform: uppercase;
       margin: 0 1rem;
     }
     
