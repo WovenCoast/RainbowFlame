@@ -37,13 +37,13 @@
     .logo h1 {
       font-weight: 700;
       font-size: 2rem;
+      
+      background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);   
+      -webkit-background-clip: text;
+      -moz-background-clip: text; 
+      background-clip: text;
+      color: transparent;
     }
-    
-    .logo h1:nth-child(0) {
-      font-weight: 700;
-      font-size: 2rem
-    }
-    
     .logo-img {
       width: 5rem;
       height: 5rem;
@@ -66,4 +66,23 @@
     }
     
   </style>
+  <script>
+    window.addEventListener("load", function() {
+  var elements = document.getElementsByClassName("rainbowText");
+  for (let i = 0; i < elements.length; i++) {
+    generateRainbowText(elements[i]);
+  }
+});
+
+function generateRainbowText(element) {
+  var text = element.innerText;
+  element.innerHTML = "";
+  for (let i = 0; i < text.length; i++) {
+    let charElem = document.createElement("span");
+    charElem.style.color = "hsl(" + (360 * i / text.length) + ",80%,50%)";
+    charElem.innerHTML = text[i];
+    element.appendChild(charElem);
+  }
+}
+  </script>
 </head>
