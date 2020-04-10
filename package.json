@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "export": "git remote add origin git@github.com:WovenCoast/ducksphinx.git && git push -u origin master"
+    "export": "git remote add github git@github.com:WovenCoast/RainbowFlame.git && git push -u github master"
   },
   "dependencies": {
     "express": "^4.17.1",
