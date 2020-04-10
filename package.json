@@ -1,11 +1,10 @@
 {
-  "name": "flamecord",
+  "name": "ducksphinx",
   "version": "0.0.1",
   "description": "A simple Node app built on Express, instantly up and running.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "memcached:install": "wget -O memcached-1.6.3.tar.gz http://memcached.org/latest && tar -zxvf memcached-1.6.3.tar.gz && cd memcached-1.6.3 && ./configure && make && make test && sudo make install"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.17.1",
@@ -24,7 +23,7 @@
     "node": "12.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/flamecord"
+    "url": "https://glitch.com/edit/#!/ducksphinx"
   },
   "license": "MIT",
   "keywords": [

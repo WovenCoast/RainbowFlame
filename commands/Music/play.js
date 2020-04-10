@@ -63,6 +63,7 @@ async function play(client, message, url) {
       connection,
       dispatcher,
       voiceChannel: message.member.voice.channel,
+      textChannel: message.channel,
       loop: "noloop",
       volume: 1.00,
       songs: [song]
@@ -89,15 +90,16 @@ async function play(client, message, url) {
       if (!serverQueue.songs[0]) {
         message.guild.me.voice.channel.leave();
         client.queue.delete(message.guild.id);
-        return message.channel.send(":white_check_mark: Nothing more to play, quitting voice channel")
+        return serverQueue.textChannel.send(":white_check_mark: Nothing more to play, quitting voice channel")
       };
+      if (serverQueue.voiceChannel.)
       const newDispatcher = await serverQueue.connection.play(
         ytdl(serverQueue.songs[0].url, { filter: "audioonly", quality: "highestaudio" })
       );
       newDispatcher.on('finish', songFinished);
       newDispatcher.setVolume(serverQueue.volume);
       serverQueue.dispatcher = newDispatcher;
-      message.channel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by **${serverQueue.songs[0].requestedBy}**`);
+      serverQueue.textChannel.send(`:arrow_forward: Playing ${parseSongName(serverQueue.songs[0].title, serverQueue.songs[0].author)} requested by **${serverQueue.songs[0].requestedBy}**`);
       client.queue.set(message.guild.id, serverQueue);
     }
   } else {
