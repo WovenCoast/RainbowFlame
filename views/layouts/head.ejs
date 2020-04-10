@@ -1,6 +1,6 @@
 <head>
     <meta charset="utf-8">
-    <title>FlameCord | <%- title %></title>
+    <title>RainbowFlame | <%- title %></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A cool thing made with Glitch">
@@ -13,12 +13,18 @@
   <style>
     :root {
       font: 16px/1.2 Roboto;
-      --text-primary: black;
+      --text-primary: #EEEEEE;
+    }
+    
+    body {
+      background-color: #2E3440;
+      
+      color: var(--text-primary);
     }
     
     nav {
-    display: flex;
-    flex-direction: row;
+      display: flex;
+      flex-direction: row;
       
       max-width: 100vw;
       margin: 2rem 4rem;
@@ -30,20 +36,20 @@
     .logo {
       display: flex;
       flex-direction: row;
-      
       align-items: center;
     }
     
-    .logo h1 {
+    .rainbowText {
       font-weight: 700;
       font-size: 2rem;
-      
-      background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);   
+      background-image: linear-gradient(to right, #FF9AA2, #FFB7B2,  #FFDAC1, #E2F0CB,  #B5EAD7, #C7CEEA);   
       -webkit-background-clip: text;
       -moz-background-clip: text; 
       background-clip: text;
       color: transparent;
     }
+  
+    
     .logo-img {
       width: 5rem;
       height: 5rem;
@@ -53,7 +59,6 @@
     
     .nav-items {
       list-style: none;
-    
       display: flex;
       felx-direction: row;
     }
@@ -67,22 +72,19 @@
     
   </style>
   <script>
-    window.addEventListener("load", function() {
-  var elements = document.getElementsByClassName("rainbowText");
-  for (let i = 0; i < elements.length; i++) {
-    generateRainbowText(elements[i]);
-  }
-});
-
-function generateRainbowText(element) {
-  var text = element.innerText;
-  element.innerHTML = "";
-  for (let i = 0; i < text.length; i++) {
-    let charElem = document.createElement("span");
-    charElem.style.color = "hsl(" + (360 * i / text.length) + ",80%,50%)";
-    charElem.innerHTML = text[i];
-    element.appendChild(charElem);
-  }
-}
+    // window.addEventListener("load", function() {
+    //   var elements = document.getElementsByClassName("rainbowText");
+    //   for (let i = 0; i < elements.length; i++) {
+    //     const element = elements[i];
+    //     var text = element.innerText;
+    //     element.innerHTML = "";
+    //     for (let i = 0; i < text.length; i++) {
+    //       let charElem = document.createElement("span");
+    //       charElem.style.color = "hsl(" + (360 * i / text.length) + ",80%,50%)";
+    //       charElem.innerHTML = text[i];
+    //       element.appendChild(charElem);
+    //     }
+    //   }
+    // });
   </script>
 </head>
