@@ -19,7 +19,6 @@ module.exports = {
     }
     let res = await search(args.join(" "));
     let videos = res.videos.slice(0, 10);
-    message.channel.startTyping();
     const requestMsg = await message.channel.send(
       new Discord.MessageEmbed()
         .setTimestamp()
@@ -36,16 +35,26 @@ module.exports = {
           )
         )
     );
+    message.channel.startTyping(30);
 
     const collector = message.channel.createMessageCollector(
       m => !isNaN(m.content) && m.content < videos.length + 1 && m.content > 0
     );
+    let collected = false;
     collector.once("collect", m => {
+      collected = true;
       const song = videos[parseInt(m.content) - 1];
       requestMsg.delete();
       m.delete();
       play(client, message, song.url);
     });
+    collector.once("end", (messages) => {
+      if (!collected) {
+        message.channel.stopTyping(true);
+        requestMsg.delete();
+        throw new Error("User request timed out");
+      }
+    })
   }
 };
 
