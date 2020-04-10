@@ -92,7 +92,11 @@ async function play(client, message, url) {
         client.queue.delete(message.guild.id);
         return serverQueue.textChannel.send(":white_check_mark: Nothing more to play, quitting voice channel")
       };
-      if (serverQueue.voiceChannel.)
+      if (serverQueue.voiceChannel.members.size <= 1) {
+        message.guild.me.voice.channel.leave();
+        client.queue.delete(message.guild.id);
+        return serverQueue.textChannel.send(":octagonal_sign: ");
+      }
       const newDispatcher = await serverQueue.connection.play(
         ytdl(serverQueue.songs[0].url, { filter: "audioonly", quality: "highestaudio" })
       );
