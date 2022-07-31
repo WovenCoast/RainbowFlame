@@ -10,8 +10,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "ejs": "^3.0.2",
-    "discord.js": "^12.1.1",
-    "node-fetch": "^2.6.0",
+    "discord.js": "^14.0.0",
+    "node-fetch": "^3.2.10",
     "btoa": "^1.2.1",
     "express-session": "^1.16.1",
     "ffmpeg": "^0.0.4",
